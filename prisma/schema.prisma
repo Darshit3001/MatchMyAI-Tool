@@ -1,0 +1,279 @@
+// APT AI — Prisma Schema
+// SQLite for local dev, easily switchable to PostgreSQL for production
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ============================================================
+// Core Models
+// ============================================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  avatar        String?
+  password      String?
+  provider      String    @default("credentials") // credentials, google, github
+  providerId    String?
+  role          String    @default("user") // user, admin, moderator
+  karma         Int       @default(0)
+  bio           String?
+  website       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  reviews       Review[]
+  comments      Comment[]
+  collections   Collection[]
+  savedTools    SavedTool[]
+  submissions   ToolSubmission[]
+
+  @@map("users")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  icon        String?
+  description String?
+  parentId    String?
+  parent      Category?  @relation("CategoryChildren", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryChildren")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tools       Tool[]
+
+  @@map("categories")
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  logo      String?
+  website   String?
+  country   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tools     Tool[]
+
+  @@map("companies")
+}
+
+model Tool {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  description   String
+  longDescription String?
+  logo          String?
+  screenshot    String?
+  website       String
+  apiDocs       String?
+  version       String?
+  country       String?
+  isVerified    Boolean  @default(false)
+  isFeatured    Boolean  @default(false)
+  isSponsored   Boolean  @default(false)
+  isPublished   Boolean  @default(true)
+  pricingModel  String   @default("FREEMIUM") // FREE, FREEMIUM, PAID, CONTACT
+  priceFrom     Float?
+  priceCurrency String   @default("USD")
+  viewCount     Int      @default(0)
+  saveCount     Int      @default(0)
+  avgRating     Float    @default(0)
+  reviewCount   Int      @default(0)
+  releasedAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id])
+  companyId     String?
+  company       Company? @relation(fields: [companyId], references: [id])
+  tags          TagsOnTools[]
+  reviews       Review[]
+  comments      Comment[]
+  savedBy       SavedTool[]
+  deals         Deal[]
+  collectionItems CollectionItem[]
+
+  @@map("tools")
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  createdAt DateTime @default(now())
+
+  // Relations
+  tools     TagsOnTools[]
+
+  @@map("tags")
+}
+
+model TagsOnTools {
+  toolId String
+  tagId  String
+  tool   Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([toolId, tagId])
+  @@map("tags_on_tools")
+}
+
+// ============================================================
+// User-Generated Content
+// ============================================================
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5
+  title     String?
+  content   String
+  pros      String   @default("[]") // JSON array stored as string
+  cons      String   @default("[]") // JSON array stored as string
+  upvotes   Int      @default(0)
+  downvotes Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  toolId    String
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([toolId, userId]) // One review per user per tool
+  @@map("reviews")
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  content   String
+  upvotes   Int       @default(0)
+  downvotes Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  toolId    String
+  tool      Tool      @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+
+  @@map("comments")
+}
+
+model SavedTool {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  toolId String
+  tool   Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, toolId])
+  @@map("saved_tools")
+}
+
+// ============================================================
+// Collections
+// ============================================================
+
+model Collection {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  icon        String?
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items  CollectionItem[]
+
+  @@map("collections")
+}
+
+model CollectionItem {
+  id           String     @id @default(cuid())
+  position     Int        @default(0)
+  addedAt      DateTime   @default(now())
+
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  toolId       String
+  tool         Tool       @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, toolId])
+  @@map("collection_items")
+}
+
+// ============================================================
+// Deals
+// ============================================================
+
+model Deal {
+  id           String   @id @default(cuid())
+  couponCode   String
+  discount     Int      // Percentage
+  originalPrice Float
+  dealPrice    Float
+  expiresAt    DateTime
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  toolId String
+  tool   Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@map("deals")
+}
+
+// ============================================================
+// Tool Submissions
+// ============================================================
+
+model ToolSubmission {
+  id           String   @id @default(cuid())
+  name         String
+  description  String
+  website      String
+  category     String
+  pricingModel String
+  logo         String?
+  status       String   @default("pending") // pending, approved, rejected
+  reviewNote   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("tool_submissions")
+}
