@@ -17,11 +17,40 @@ async function seedTurso() {
     }
 
     console.log("🔗 Connecting to Turso...");
+    const libsql = createClient({ url, authToken });
     const adapter = new PrismaLibSql({ url, authToken });
     const prisma = new PrismaClient({ adapter });
 
     try {
-        // Check connection
+        console.log("🛠️  Applying database schema to Turso...");
+        const fs = require('fs');
+        const path = require('path');
+        const schemaSql = fs.readFileSync(path.join(__dirname, 'turso-schema.sql'), 'utf-8');
+
+        // Split by semicolon and filter out empty statements
+        const statements = schemaSql.split(';').map((s: string) => s.trim()).filter((s: string) => s.length > 0);
+
+        // Execute schema statements in a transaction
+        let tx;
+        try {
+            tx = await libsql.transaction("write");
+            for (const stmt of statements) {
+                // Ignore "CREATE TABLE" if we're just updating, but for this let's just run it
+                await tx.execute(stmt);
+            }
+            await tx.commit();
+            console.log(`✅ Applied ${statements.length} schema statements`);
+        } catch (schemaError: any) {
+            if (tx) await tx.rollback();
+            // If the error contains "already exists", it means schema is already pushed
+            if (schemaError.message && schemaError.message.includes('already exists')) {
+                console.log("ℹ️  Schema already exists, proceeding to seed...");
+            } else {
+                throw schemaError;
+            }
+        }
+
+        // Check connection Data
         const existing = await prisma.user.count();
         console.log(`📊 Current users in production: ${existing}`);
 
