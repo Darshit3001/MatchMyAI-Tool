@@ -1,4 +1,4 @@
-// Seed script for APT AI database
+// Seed script for MatchMyAI Tool database
 // Run with: npx tsx prisma/seed.ts
 
 const now = new Date();
@@ -14,7 +14,7 @@ async function main() {
     const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
     const prisma = new PrismaClient({ adapter });
 
-    console.log("🌱 Seeding APT AI database...\n");
+    console.log("🌱 Seeding MatchMyAI Tool database...\n");
 
     // Clear existing data
     console.log("🧹 Clearing existing data...");
@@ -164,7 +164,7 @@ async function main() {
     // 5. Admin user
     console.log("\n👤 Creating admin user...");
     const admin = await prisma.user.create({
-        data: { email: "admin@aptai.com", name: "APT AI Admin", role: "admin", karma: 1000 },
+        data: { email: "admin@aptai.com", name: "MatchMyAI Tool Admin", role: "admin", karma: 1000 },
     });
     console.log(`  ✅ ${admin.email}`);
 

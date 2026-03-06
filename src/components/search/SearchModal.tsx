@@ -199,7 +199,7 @@ export function SearchModal() {
                                         to close
                                     </span>
                                 </div>
-                                <span>Powered by APT AI</span>
+                                <span>Powered by MatchMyAI Tool</span>
                             </div>
                         </div>
                     </motion.div>

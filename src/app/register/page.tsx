@@ -86,7 +86,7 @@ export default function RegisterPage() {
                                 Create Account
                             </h1>
                             <p className="text-text-500 dark:text-text-400">
-                                Join APT AI to curate your ultimate toolkit
+                                Join MatchMyAI Tool to curate your ultimate toolkit
                             </p>
                         </div>
 

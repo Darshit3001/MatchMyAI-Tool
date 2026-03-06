@@ -7,16 +7,16 @@ import Link from "next/link";
 
 const faqs = [
     {
-        q: "What is APT AI?",
-        a: "APT AI is the most comprehensive AI tool discovery platform. We help you find, compare, and choose the perfect AI tool from our directory of 46,600+ tools across 200+ categories.",
+        q: "What is MatchMyAI Tool?",
+        a: "MatchMyAI Tool is the most comprehensive AI tool discovery platform. We help you find, compare, and choose the perfect AI tool from our directory of 46,600+ tools across 200+ categories.",
     },
     {
         q: "How do I find the right AI tool?",
         a: "You can browse categories, use our powerful search, or take our interactive quiz at /quiz to get personalized recommendations based on your needs, role, and budget.",
     },
     {
-        q: "Is APT AI free to use?",
-        a: "Yes! Browsing, searching, and comparing tools on APT AI is completely free. Some premium features like advanced analytics and early access to new tools may be available in the future.",
+        q: "Is MatchMyAI Tool free to use?",
+        a: "Yes! Browsing, searching, and comparing tools on MatchMyAI Tool is completely free. Some premium features like advanced analytics and early access to new tools may be available in the future.",
     },
     {
         q: "How do I submit my AI tool?",
@@ -54,7 +54,7 @@ export default function HelpPage() {
                     Help Center
                 </h1>
                 <p className="text-sm text-[var(--text-tertiary)]">
-                    Everything you need to know about using APT AI
+                    Everything you need to know about using MatchMyAI Tool
                 </p>
             </motion.div>
 

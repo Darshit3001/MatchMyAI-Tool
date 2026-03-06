@@ -33,7 +33,7 @@ export default function NewsletterPage() {
                     <Mail size={32} className="text-white" />
                 </div>
                 <h1 className="text-3xl lg:text-4xl font-bold text-[var(--text-primary)] mb-3">
-                    The <span className="text-gradient">APT AI</span> Newsletter
+                    The <span className="text-gradient">MatchMyAI Tool</span> Newsletter
                 </h1>
                 <p className="text-base text-[var(--text-secondary)] max-w-lg mx-auto mb-2">
                     Get the latest AI tools, exclusive deals, and expert insights delivered to your inbox every week.
@@ -83,7 +83,7 @@ export default function NewsletterPage() {
                         </div>
                         <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">You&apos;re in! 🎉</h3>
                         <p className="text-sm text-[var(--text-tertiary)]">
-                            Welcome to the APT AI community. Check your inbox for a welcome email.
+                            Welcome to the MatchMyAI Tool community. Check your inbox for a welcome email.
                         </p>
                     </motion.div>
                 )}

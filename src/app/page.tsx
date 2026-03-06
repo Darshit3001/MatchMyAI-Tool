@@ -96,7 +96,7 @@ export default function HomePage() {
             className="text-center mb-6"
           >
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold font-[var(--font-display)] tracking-tight leading-[1.1] mb-4">
-              <span className="text-gradient text-glow">APT AI</span>
+              <span className="text-gradient text-glow">MatchMyAI Tool</span>
             </h1>
             <p className="text-lg sm:text-xl lg:text-2xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed font-light">
               Discover the perfect AI tool for any task.

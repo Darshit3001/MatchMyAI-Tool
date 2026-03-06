@@ -63,7 +63,7 @@ export default function DealsPage() {
                         Active deals on {deals.length} AI tools
                     </h2>
                     <p className="text-sm text-[var(--text-secondary)]">
-                        Exclusive discounts curated by APT AI. Use the codes below at checkout.
+                        Exclusive discounts curated by MatchMyAI Tool. Use the codes below at checkout.
                     </p>
                 </div>
             </motion.div>

@@ -121,7 +121,7 @@ export default function SearchPage() {
                             }`}
                     >
                         <Sparkles size={16} className={activeTab === "tools" ? "fill-current opacity-20" : ""} />
-                        APT AI Tools
+                        MatchMyAI Tool Tools
                     </button>
                     <button
                         onClick={() => setActiveTab("github")}

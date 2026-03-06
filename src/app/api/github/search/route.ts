@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
     try {
         // We add "ai OR llm OR machine learning" as hidden keywords if the user's query doesn't explicitly mention AI
-        // to keep the results somewhat relevant to APT AI, unless we just want raw search.
+        // to keep the results somewhat relevant to MatchMyAI Tool, unless we just want raw search.
         // Let's just do raw search so they can find any repo.
         const githubResponse = await fetch(
             `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=12`,

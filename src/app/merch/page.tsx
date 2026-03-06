@@ -6,8 +6,8 @@ import { ShoppingBag, Star, Heart, ExternalLink } from "lucide-react";
 
 const merchItems = [
     {
-        id: "1", name: "APT AI Classic Tee", price: 29.99,
-        description: "Premium cotton t-shirt with the APT AI logo",
+        id: "1", name: "MatchMyAI Tool Classic Tee", price: 29.99,
+        description: "Premium cotton t-shirt with the MatchMyAI Tool logo",
         category: "Apparel", colors: ["#1a1a2e", "#ffffff", "#7C5CFC"],
         rating: 4.8, reviews: 127, badge: "Best Seller",
     },
@@ -73,7 +73,7 @@ export default function MerchPage() {
                     </div>
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-[var(--text-primary)]">
-                            APT AI <span className="text-gradient">Merch</span>
+                            MatchMyAI Tool <span className="text-gradient">Merch</span>
                         </h1>
                         <p className="text-sm text-[var(--text-tertiary)]">
                             Wear the future. Premium goods for AI enthusiasts.

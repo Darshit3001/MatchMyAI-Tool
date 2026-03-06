@@ -51,12 +51,14 @@ export function Sidebar() {
             {/* Logo */}
             <div className="flex items-center h-16 px-4 border-b border-[var(--border-default)]">
                 <Link href="/" className="flex items-center gap-2 group">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex items-center justify-center text-white font-bold text-sm shadow-lg transition-transform group-hover:scale-110">
-                        A
-                    </div>
+                    <img
+                        src="/logo.png"
+                        alt="Logo"
+                        className="w-8 h-8 rounded-lg shadow-lg transition-transform group-hover:scale-110 object-cover"
+                    />
                     {!sidebarCollapsed && (
-                        <span className="text-lg font-bold text-gradient font-[var(--font-display)]">
-                            APT AI
+                        <span className="text-sm font-bold text-gradient font-[var(--font-display)] leading-tight">
+                            MatchMyAI Tool
                         </span>
                     )}
                 </Link>

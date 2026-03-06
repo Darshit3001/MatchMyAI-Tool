@@ -10,7 +10,7 @@ const collections = [
         id: "1", slug: "ai-starter-pack", name: "AI Starter Pack",
         description: "Essential AI tools everyone should know about",
         icon: "🚀", toolCount: 8, isPublic: true,
-        user: { name: "APT AI Team", avatar: null },
+        user: { name: "MatchMyAI Tool Team", avatar: null },
         toolPreviews: allTools.slice(0, 4),
     },
     {

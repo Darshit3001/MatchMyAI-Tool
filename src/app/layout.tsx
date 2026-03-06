@@ -36,9 +36,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "APT AI — Find The Perfect AI Tool For Any Task",
+  title: "MatchMyAI Tool — Find The Perfect AI Tool For Any Task",
   description:
-    "Discover, compare, and choose from thousands of AI tools. APT AI is your intelligent AI tool directory with smart recommendations, comparisons, and community reviews.",
+    "Discover, compare, and choose from thousands of AI tools. MatchMyAI Tool is your intelligent AI tool directory with smart recommendations, comparisons, and community reviews.",
   keywords: [
     "AI tools",
     "artificial intelligence",
@@ -50,10 +50,10 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "APT AI",
+    title: "MatchMyAI Tool",
   },
   openGraph: {
-    title: "APT AI — Find The Perfect AI Tool For Any Task",
+    title: "MatchMyAI Tool — Find The Perfect AI Tool For Any Task",
     description:
       "Discover, compare, and choose from thousands of AI tools.",
     type: "website",
