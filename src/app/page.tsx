@@ -7,7 +7,7 @@ import { useUIStore } from "@/stores/uiStore";
 import { tools as allTools, categories, getLatestTools, getTrendingTools } from "@/data/tools";
 import { ToolGrid } from "@/components/tools/ToolGrid";
 import { FeedTabs } from "@/components/tools/FeedTabs";
-import { Search, ArrowRight, Sparkles, BarChart3, Briefcase, Layers, Zap, Send, Map as MapIcon } from "lucide-react";
+import { Search, ArrowRight, Sparkles, BarChart3, Briefcase, Layers, Zap, Send, Map as MapIcon, X, Clock } from "lucide-react";
 import Link from "next/link";
 
 // Stats data
@@ -17,10 +17,8 @@ const stats = [
   { label: "Categories", value: "200+", icon: BarChart3, color: "var(--color-warning)" },
 ];
 
-// Featured categories for quick nav
 const featuredCategories = categories.slice(0, 8);
 
-// Sparkle particle positions (randomized feel)
 const sparkles = [
   { left: "10%", top: "20%", delay: 0, duration: 4 },
   { left: "25%", top: "60%", delay: 1.2, duration: 5 },
@@ -37,87 +35,67 @@ const sparkles = [
 ];
 
 export default function HomePage() {
-  const { feedTab, freeMode } = useFilterStore();
+  const { feedTab, freeMode, timelineFilter, setTimelineFilter } = useFilterStore();
   const { setSearchOpen } = useUIStore();
   const [showAllCategories, setShowAllCategories] = useState(false);
 
   const filteredTools = useMemo(() => {
-    let result = feedTab === "trending" ? getTrendingTools(24) : getLatestTools(24);
+    let result = feedTab === "trending" ? getTrendingTools(60) : getLatestTools(60);
 
-    if (freeMode) {
-      result = result.filter((t) => t.pricingModel === "FREE");
+    // Timeline filter
+    if (timelineFilter) {
+      result = result.filter((t) => {
+        const date = new Date(t.createdAt);
+        const year = date.getFullYear().toString();
+        const monthYear = `${date.toLocaleString("en", { month: "short" }).toLowerCase()}-${date.getFullYear()}`;
+        return year === timelineFilter || monthYear === timelineFilter;
+      });
     }
 
+    if (freeMode) result = result.filter((t) => t.pricingModel === "FREE");
     return result;
-  }, [feedTab, freeMode]);
+  }, [feedTab, freeMode, timelineFilter]);
 
   return (
     <div className="pb-24 lg:pb-8">
-      {/* ============================================================
-          LIQUID GLASS IMMERSIVE HERO
-          ============================================================ */}
-      <section className="relative overflow-hidden" style={{ minHeight: "clamp(420px, 60vh, 600px)" }}>
-        {/* Layer 0: Animated Mesh Gradient Background */}
-        <div className="liquid-mesh-bg" />
 
-        {/* Layer 0.5: Sparkle Particles */}
+      {/* ════════════════════════════════════════════════════════
+          HERO
+      ════════════════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden" style={{ minHeight: "clamp(420px, 60vh, 600px)" }}>
+        <div className="liquid-mesh-bg"><span /></div>
+
         {sparkles.map((s, i) => (
-          <div
-            key={i}
-            className="sparkle"
-            style={{
-              left: s.left,
-              top: s.top,
-              animationDelay: `${s.delay}s`,
-              animationDuration: `${s.duration}s`,
-              width: i % 3 === 0 ? "4px" : i % 2 === 0 ? "2px" : "3px",
-              height: i % 3 === 0 ? "4px" : i % 2 === 0 ? "2px" : "3px",
-            }}
-          />
+          <div key={i} className="sparkle" style={{
+            left: s.left, top: s.top,
+            animationDelay: `${s.delay}s`, animationDuration: `${s.duration}s`,
+            width: i % 3 === 0 ? "4px" : i % 2 === 0 ? "2px" : "3px",
+            height: i % 3 === 0 ? "4px" : i % 2 === 0 ? "2px" : "3px",
+          }} />
         ))}
 
-        {/* Layer 1: Behind-text glow */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 1 }}>
-          <div
-            className="w-[600px] h-[350px] rounded-full blur-[130px] opacity-50"
-            style={{
-              background: "radial-gradient(ellipse, rgba(108, 92, 231, 0.6), rgba(0, 210, 255, 0.25), transparent)",
-            }}
-          />
+          <div className="w-[600px] h-[350px] rounded-full blur-[130px] opacity-50"
+            style={{ background: "radial-gradient(ellipse, rgba(108,92,231,0.6), rgba(0,210,255,0.25), transparent)" }} />
         </div>
 
-        {/* Layer 2: Main Content */}
         <div className="relative px-4 lg:px-8 pt-10 pb-8 lg:pt-16 lg:pb-10 flex flex-col items-center" style={{ zIndex: 2 }}>
-          {/* Massive Headline */}
-          <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center mb-6"
-          >
+          <motion.div initial={{ opacity: 0, y: 30, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="text-center mb-6">
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold font-[var(--font-display)] tracking-tight leading-[1.1] mb-4">
               <span className="text-gradient text-glow">MatchMyAI Tool</span>
             </h1>
             <p className="text-lg sm:text-xl lg:text-2xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed font-light">
               Discover the perfect AI tool for any task.
               <br className="hidden sm:block" />
-              <span className="text-[var(--text-primary)] font-medium"> Compare, review, and decide </span>
-              with confidence.
+              <span className="text-[var(--text-primary)] font-medium"> Compare, review, and decide </span>with confidence.
             </p>
           </motion.div>
 
-          {/* Glass Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full max-w-2xl mb-8"
-          >
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="liquid-search glass-shimmer glow-pulse-border w-full flex items-center gap-3 px-6 py-4 group cursor-pointer"
-              id="hero-search"
-            >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }} className="w-full max-w-2xl mb-8">
+            <button onClick={() => setSearchOpen(true)}
+              className="liquid-search glass-shimmer glow-pulse-border w-full flex items-center gap-3 px-6 py-4 group cursor-pointer" id="hero-search">
               <Search size={20} className="text-[var(--text-muted)] group-hover:text-[var(--color-accent)] transition-colors duration-300" />
               <span className="text-sm sm:text-base text-[var(--text-muted)] group-hover:text-[var(--text-tertiary)] transition-colors duration-300 flex-1 text-left">
                 Search 46,600+ AI tools...
@@ -128,44 +106,21 @@ export default function HomePage() {
             </button>
           </motion.div>
 
-          {/* Dual CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center gap-3 mb-10"
-          >
-            <Link
-              href="/categories"
-              className="liquid-btn px-6 py-2.5 text-sm font-semibold text-white flex items-center gap-2"
-            >
-              <Zap size={15} />
-              Explore Tools
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35, ease: [0.16, 1, 0.3, 1] }} className="flex items-center gap-3 mb-10">
+            <Link href="/categories" className="liquid-btn px-6 py-2.5 text-sm font-semibold text-white flex items-center gap-2">
+              <Zap size={15} />Explore Tools
             </Link>
-            <Link
-              href="/submit"
-              className="liquid-btn-ghost px-6 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center gap-2"
-            >
-              <Send size={14} />
-              Submit a Tool
+            <Link href="/submit" className="liquid-btn-ghost px-6 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center gap-2">
+              <Send size={14} />Submit a Tool
             </Link>
           </motion.div>
 
-          {/* Floating Stats in Glass Pills */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center gap-3 sm:gap-4 mb-8"
-          >
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5, ease: [0.16, 1, 0.3, 1] }} className="flex items-center gap-3 sm:gap-4 mb-8">
             {stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 + i * 0.1 }}
-                className="liquid-glass-thin px-4 py-2.5 flex items-center gap-2 rounded-2xl"
-              >
+              <motion.div key={stat.label} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6 + i * 0.1 }} className="liquid-glass-thin px-4 py-2.5 flex items-center gap-2 rounded-2xl">
                 <stat.icon size={15} style={{ color: stat.color }} />
                 <span className="text-lg font-bold text-[var(--text-primary)]">{stat.value}</span>
                 <span className="text-xs text-[var(--text-muted)] hidden sm:inline">{stat.label}</span>
@@ -173,132 +128,130 @@ export default function HomePage() {
             ))}
           </motion.div>
 
-          {/* Category Pills in Glass */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.65 }}
-            className="flex flex-wrap items-center justify-center gap-2"
-          >
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.65 }} className="flex flex-wrap items-center justify-center gap-2">
             {(showAllCategories ? categories : featuredCategories).map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/categories/${cat.slug}`}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-white/[0.03] border border-white/[0.06] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-white/[0.12] hover:bg-white/[0.06] backdrop-blur-sm transition-all duration-300"
-              >
-                <span>{cat.icon}</span>
-                <span>{cat.name}</span>
+              <Link key={cat.id} href={`/categories/${cat.slug}`}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-white/[0.03] border border-white/[0.06] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-white/[0.12] hover:bg-white/[0.06] backdrop-blur-sm transition-all duration-300">
+                <span>{cat.icon}</span><span>{cat.name}</span>
                 <span className="text-[var(--text-muted)]">({cat.toolCount})</span>
               </Link>
             ))}
             {!showAllCategories && (
-              <button
-                onClick={() => setShowAllCategories(true)}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 transition-all duration-200"
-              >
-                Show all
-                <ArrowRight size={12} />
+              <button onClick={() => setShowAllCategories(true)}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 transition-all duration-200">
+                Show all<ArrowRight size={12} />
               </button>
             )}
           </motion.div>
         </div>
 
-        {/* Bottom fade into feed */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
-          style={{
-            background: "linear-gradient(to bottom, transparent, var(--bg-primary))",
-            zIndex: 3,
-          }}
-        />
+        <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, transparent, var(--bg-primary))", zIndex: 3 }} />
       </section>
 
-      {/* ============================================================
-          FUTURISTIC MAP PREVIEW SECTION
-          ============================================================ */}
-      <section className="px-4 lg:px-8 mb-16 relative z-10">
-        <div className="relative overflow-hidden rounded-[32px] border border-[var(--color-primary)]/20 shadow-[0_0_50px_rgba(124,92,252,0.1)_inset] bg-[#050510] group">
-          {/* Holographic BG */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none"
-            style={{
-              backgroundImage: `
-                linear-gradient(to right, var(--color-primary) 1px, transparent 1px),
-                linear-gradient(to bottom, var(--color-primary) 1px, transparent 1px)
-              `,
-              backgroundSize: "40px 40px",
-              perspective: "1000px",
-              transform: "rotateX(60deg) scale(2) translateY(-20%)",
-              transformOrigin: "top text-center"
-            }}
-          />
-          {/* Radar */}
-          <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-screen"
-            style={{
-              background: "conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 270deg, var(--color-accent) 360deg)",
-              animation: "radar-spin 6s linear infinite",
-              borderRadius: "50%"
-            }}
-          />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] aspect-square rounded-full border border-[var(--color-primary)]/10" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[500px] aspect-square rounded-full border border-[var(--color-accent)]/10" />
+      {/* ════════════════════════════════════════════════════════
+          CATEGORY RIVER — Auto-scrolling ticker + CTA
+      ════════════════════════════════════════════════════════ */}
+      <section className="mb-16 relative z-10 overflow-hidden">
+        <div className="relative bg-gradient-to-br from-[#0D0D1A] via-[#07070F] to-[#0A0A0F] border-y border-white/[0.04] py-14">
+          {/* Ambient glows */}
+          <div className="absolute top-0 left-[-10%] w-[500px] h-[300px] rounded-full bg-[var(--color-primary)]/8 blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-0 right-[-5%] w-[400px] h-[250px] rounded-full bg-[var(--color-accent)]/6 blur-[120px] pointer-events-none" />
 
-          {/* Content */}
-          <div className="relative z-10 px-8 py-16 md:px-16 md:py-24 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 rounded-2xl bg-black/60 border border-[var(--color-primary)]/30 backdrop-blur-xl flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(124,92,252,0.3)]">
-              <MapIcon size={32} className="text-[var(--color-primary-light)]" />
+          <div className="relative px-4 lg:px-8">
+            {/* Heading row */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10">
+              <div>
+                <p className="text-[11px] font-mono tracking-[0.25em] uppercase text-[var(--color-accent)]/60 mb-3">◈ AI Ecosystem Explorer</p>
+                <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-white leading-tight">
+                  Every AI category,{" "}
+                  <span className="bg-gradient-to-r from-[var(--color-primary-light)] via-white to-[var(--color-accent)] bg-clip-text text-transparent">
+                    one place.
+                  </span>
+                </h2>
+                <p className="mt-3 text-sm text-white/40 max-w-md">
+                  Browse {categories.length}+ sectors — writing, imaging, coding, research, and beyond.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3 shrink-0">
+                <div className="flex items-center gap-3">
+                  {[
+                    { v: `${categories.length}+`, l: "Categories" },
+                    { v: "46k+", l: "AI Tools" },
+                  ].map((s) => (
+                    <div key={s.l} className="text-center px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+                      <p className="text-lg font-bold text-white">{s.v}</p>
+                      <p className="text-[10px] text-white/30 font-mono uppercase tracking-wider">{s.l}</p>
+                    </div>
+                  ))}
+                </div>
+                <Link href="/map"
+                  className="group flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-bold text-sm text-black bg-white hover:bg-[var(--color-primary-light)] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_20px_rgba(255,255,255,0.1)]">
+                  <MapIcon size={15} />
+                  Open Explorer
+                  <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold font-[var(--font-display)] tracking-tight mb-4 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-              Explore the <span className="text-[var(--color-primary-light)]">Neural Map</span>
-            </h2>
-            <p className="text-[var(--text-secondary)] text-lg md:text-xl max-w-xl mx-auto mb-8 font-light">
-              Dive into our interactive 3D ecosystem. Navigate through interconnected AI models, protocols, and thousands of intelligent tools.
-            </p>
-            <Link
-              href="/map"
-              className="group/btn relative overflow-hidden px-8 py-4 rounded-xl font-bold text-white bg-black border border-[var(--color-primary)]/50 transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(124,92,252,0.4)]"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)] opacity-20 group-hover/btn:opacity-50 transition-opacity" />
-              <span className="relative z-10 flex items-center gap-2">
-                Initialize Hologram <ArrowRight size={18} />
-              </span>
-            </Link>
+
+            {/* Auto-scrolling ribbon */}
+            <div className="relative overflow-hidden" style={{ maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)" }}>
+              <motion.div
+                className="flex gap-3 w-max"
+                animate={{ x: ["0%", "-50%"] }}
+                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+              >
+                {[...categories, ...categories].map((cat, i) => (
+                  <Link key={`${cat.id}-${i}`} href={`/categories/${cat.slug}`}
+                    className="group flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] hover:border-white/[0.14] transition-all whitespace-nowrap shrink-0">
+                    <span className="text-lg">{cat.icon}</span>
+                    <span className="text-sm font-medium text-white/70 group-hover:text-white transition-colors">{cat.name}</span>
+                    <span className="text-[11px] font-mono text-white/25 group-hover:text-white/50 transition-colors">{cat.toolCount}</span>
+                  </Link>
+                ))}
+              </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Feed Section */}
+      {/* ════════════════════════════════════════════════════════
+          LIVE FEED
+      ════════════════════════════════════════════════════════ */}
       <section className="px-4 lg:px-8">
-        {/* Feed header */}
         <div className="flex items-center justify-between mb-5">
           <FeedTabs />
-
           <div className="flex items-center gap-2">
-            <Link
-              href="/quiz"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[var(--color-primary-light)] bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/15 transition-all duration-200"
-            >
-              <Sparkles size={12} />
-              Find my tool
+            <Link href="/quiz"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[var(--color-primary-light)] bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/15 transition-all duration-200">
+              <Sparkles size={12} />Find my tool
             </Link>
           </div>
         </div>
 
-        {/* Free mode indicator */}
         {freeMode && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mb-4"
-          >
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }} className="mb-4">
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--color-free)]/10 border border-[var(--color-free)]/20 text-[var(--color-free)] text-xs font-medium">
-              <Sparkles size={12} />
-              Showing free tools only
+              <Sparkles size={12} />Showing free tools only
             </div>
           </motion.div>
         )}
 
-        {/* Tool Grid */}
+        {timelineFilter && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }} className="mb-4">
+            <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 text-[var(--color-primary-light)] text-xs font-medium">
+              <span className="flex items-center gap-2"><Clock size={12} />Showing tools from: <strong>{timelineFilter.toUpperCase()}</strong></span>
+              <button onClick={() => setTimelineFilter(null)} className="p-0.5 hover:bg-white/10 rounded transition-colors">
+                <X size={12} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
         <ToolGrid tools={filteredTools} />
       </section>
     </div>
